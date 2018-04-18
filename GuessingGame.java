@@ -10,6 +10,7 @@ public class GuessingGame
     Scanner keyboard;
     public GuessingGame(String question, String noAnswer, String yesAnswer)
     {
+    	System.out.println("Hello World");
     	keyboard = new Scanner(System.in);
         DecisionTree<String> no = new DecisionTree<>(noAnswer);
         DecisionTree<String> yes = new DecisionTree<>(yesAnswer);
