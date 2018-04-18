@@ -11,6 +11,7 @@ public class GuessingGame
     public GuessingGame(String question, String noAnswer, String yesAnswer)
     {
     	System.out.println("Hello World");
+    	System.out.println("HelloWorld From PC 2");
     	keyboard = new Scanner(System.in);
         DecisionTree<String> no = new DecisionTree<>(noAnswer);
         DecisionTree<String> yes = new DecisionTree<>(yesAnswer);
