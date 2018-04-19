@@ -6,17 +6,16 @@ import java.io.*;
 
 public class GuessingGame
 {
-    private DecisionTreeInterface<String> tree;
+	private final String FILENAME = "ANIMALS.txt";
+	private DecisionTreeInterface<String> tree;
     Scanner keyboard;
     public GuessingGame(String question, String noAnswer, String yesAnswer)
     {
-    	System.out.println("Hello World");
-    	System.out.println("HelloWorld From PC 2");
-    	System.out.println("Hello World from PC 3");
     	keyboard = new Scanner(System.in);
         DecisionTree<String> no = new DecisionTree<>(noAnswer);
         DecisionTree<String> yes = new DecisionTree<>(yesAnswer);
         tree = new DecisionTree<>(question, no, yes);
+        LoadGame();
         play();
   
     }
@@ -61,8 +60,53 @@ public class GuessingGame
         tree.setResponses(tree.getCurrentData(), Animal);
         tree.setCurrentData(QuestionOfAnimal);
     }
+    private void LoadGame(){
+    	try{
+    		
+    		
+    	}catch(Exception ex){
+    		System.out.println("File not Found\nCreate new file " + FILENAME + " ?");
+    		System.out.println("Type in Y or N");
+    		String answer = keyboard.nextLine();
+    			if(answer.equals("Y")){
+    				CreateFile();
+    			}else{
+    				System.out.println("Program will now close");
+    				System.exit(0);
+    			}
+    	}
+    }
+    private void CreateFile(){
+    	try{
+    		File file = new File(FILENAME);
+    		}catch(Exception ex){
+    			System.out.println("File could not open Program is now closing");
+    			System.exit(0);
+    		}
+    }
     private void WritetoFile() {
-    	
+    	try{
+    			PrintWriter file = new PrintWriter(FILENAME);
+    			Iterator<String> iterator = tree.getLevelOrderIterator();
+    			
+    			while(iterator.hasNext())
+    	        {
+    	            file.println(iterator.next());
+    	        }
+    			file.close();
+    			
+    		}catch(Exception ex){
+    			System.out.println("File not Found\n Would you like to Create a new File?" );
+    			System.out.println("Please Enter Y or N:");
+    			String answer = keyboard.nextLine();
+    			
+    			if(answer.equals("Y")){
+    				CreateFile();
+    			}else{
+    				System.out.println("Program is now Closing");
+    				System.exit(0);
+    			}
+    		}
     }
     private boolean AsktoWritetoFile() {
     	boolean writetoFile = false;
