@@ -8,17 +8,83 @@ public class GuessingGame
 {
 	private final String FILENAME = "ANIMALS.txt";
 	private DecisionTreeInterface<String> tree;
+	
     Scanner keyboard;
+    
     public GuessingGame(String question, String noAnswer, String yesAnswer)
     {
     	keyboard = new Scanner(System.in);
         DecisionTree<String> no = new DecisionTree<>(noAnswer);
         DecisionTree<String> yes = new DecisionTree<>(yesAnswer);
         tree = new DecisionTree<>(question, no, yes);
-        LoadGame();
+        //LoadGame();
         play();
   
     }
+    
+    private void LoadGame()
+    {
+    	try{
+    		
+    		
+    		File AnimalCopy = new File(FILENAME);
+    		Scanner AnimalScanner = new Scanner(AnimalCopy);
+   		
+    		if(AnimalScanner.hasNext()) 
+    		{	
+    			
+    			tree.CreateNode();
+    			Iterator<String> iterator = tree.getLevelOrderIterator();
+    		   		
+    				while(AnimalScanner.hasNext())
+    				{
+    					System.out.println("HELLO");
+    					tree.CreateNode();
+    					iterator.next();
+    					String LineInFile = AnimalScanner.nextLine();
+    					
+    					if(!LineInFile.equals("null")) {    						
+    						tree.getCurrentNode().setData(AnimalScanner.nextLine());
+    					}else {
+    						tree.setCurrentNode(null);
+    					}
+    			
+    				}
+    				
+    				AnimalScanner.close();
+    		}
+    	
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    		System.out.println("File not Found\nCreate new file " + FILENAME + " ?");
+    		System.out.println("Type in Y or N: ");
+    		String answer = keyboard.nextLine();
+    			
+    		if(answer.equals("Y"))
+    			{
+    				
+    					try {
+    							PrintWriter file = new PrintWriter(FILENAME);
+    							file.close();
+    							return;
+    					
+    					}catch(Exception Ex) {
+    							System.out.println("ERROR Creating File");
+    							System.exit(0);
+    					}
+    				
+    				
+    			}else
+    			{
+    				
+    				System.out.println("Program will now close");
+    				
+    				System.exit(0);
+    			}
+    	}
+    }
+    
+    
     public void play()
     {
     	String answer;
@@ -27,26 +93,34 @@ public class GuessingGame
     			answer = keyboard.nextLine();
         
     				if(answer.equals("no")) {
-    					AdvanceToRoot("no");
+    					AdvanceToChild("no");
     					break;
     				}else if(answer.equals("yes")){
-    					AdvanceToRoot("yes");
+    					AdvanceToChild("yes");
     					break;
     				}
     			System.out.println("Please Enter: yes or no");
     		}while(!answer.equals("N")||!answer.equals("Y"));
-    		
-    		if(PlayAgain().equals("Y")) {
-    			tree.resetCurrentNode();
-    			play();
-    		}else {
-    			if(AsktoWritetoFile()) {
-    				WritetoFile();
-    			}
-    			System.exit(0);
-    		}
+    		EndofGAME();
     }
     
+    
+    public void EndofGAME() {
+    	System.out.println("Type Y to play again or N to quit");
+    	
+		if(keyboard.nextLine().equals("Y")) {
+			tree.resetCurrentNode();
+			play();
+		}else {
+			Write_TO_console();
+			if(AsktoWritetoFile()) {
+				WritetoFile();
+			}
+			keyboard.close();
+			System.exit(0);
+		}
+    }
+   
     
     public void learn()
     {
@@ -60,70 +134,9 @@ public class GuessingGame
         tree.setResponses(tree.getCurrentData(), Animal);
         tree.setCurrentData(QuestionOfAnimal);
     }
-    private void LoadGame(){
-    	try{
-    		
-    		
-    	}catch(Exception ex){
-    		System.out.println("File not Found\nCreate new file " + FILENAME + " ?");
-    		System.out.println("Type in Y or N");
-    		String answer = keyboard.nextLine();
-    			if(answer.equals("Y")){
-    				CreateFile();
-    			}else{
-    				System.out.println("Program will now close");
-    				System.exit(0);
-    			}
-    	}
-    }
-    private void CreateFile(){
-    	try{
-    		File file = new File(FILENAME);
-    		}catch(Exception ex){
-    			System.out.println("File could not open Program is now closing");
-    			System.exit(0);
-    		}
-    }
-    private void WritetoFile() {
-    	try{
-    			PrintWriter file = new PrintWriter(FILENAME);
-    			Iterator<String> iterator = tree.getLevelOrderIterator();
-    			
-    			while(iterator.hasNext())
-    	        {
-    	            file.println(iterator.next());
-    	        }
-    			file.close();
-    			
-    		}catch(Exception ex){
-    			System.out.println("File not Found\n Would you like to Create a new File?" );
-    			System.out.println("Please Enter Y or N:");
-    			String answer = keyboard.nextLine();
-    			
-    			if(answer.equals("Y")){
-    				CreateFile();
-    			}else{
-    				System.out.println("Program is now Closing");
-    				System.exit(0);
-    			}
-    		}
-    }
-    private boolean AsktoWritetoFile() {
-    	boolean writetoFile = false;
-    	
-    	System.out.println("Enter Y to save to File or N otherwise");
-    	String Answer = keyboard.nextLine();
-    	
-    	writetoFile = Answer.equals("Y") ? true : false;
-    	
-    	return writetoFile;
-    	
-    }
-    private String PlayAgain() {
-    	System.out.println("Type Y to play again or N to quit");
-    	return keyboard.nextLine();
-    }
-    private String GetInput() {
+    
+    
+    private String IGUESSIT_IS() {
     	String answer; 
     	System.out.println("I guess it is a " + tree.getCurrentData());
     	
@@ -137,7 +150,9 @@ public class GuessingGame
     	
     	return answer;
     }
-    private void AdvanceToRoot(String Answer) {
+   
+
+    private void AdvanceToChild(String Answer) {
     	String reply;
     	
     	if(Answer.equals("no")) {
@@ -147,7 +162,7 @@ public class GuessingGame
     	}
     	
     	if(tree.isAnswer()) {
-    		reply = GetInput();
+    		reply = IGUESSIT_IS();
     		if(reply.equals("no")) {
     			System.out.println("I Lose");
     			learn();
@@ -157,6 +172,71 @@ public class GuessingGame
     	}else {
     		play();
     	}
+    }
+   
+    // This is what will be posted to the console 
+    
+    private void Write_TO_console() {
+    	Iterator<String> iterator = null ;
+    	
+    	System.out.println("How would you like to see the tree?:\nType in the number for the following:");
+    	System.out.println("1: LevelOrder\n2: Preorder\n3: Skip");
+    	int Menu = keyboard.nextInt();
+    	
+    	
+    	switch(Menu) {
+    		case 1:
+    		{
+    			iterator = tree.getLevelOrderIterator();
+    			break;
+    		}
+    		case 2:
+    		{
+    			iterator = tree.getPreorderIterator();
+    			break;
+    		}
+    		default:
+    		{    		
+    			return;
+    			
+    		}
+    	}
+    	
+    	while(iterator.hasNext()) {
+    		System.out.println(iterator.next());
+    	}
+    	System.out.println();
+    	
+    }
+
+    private void WritetoFile() 
+    {
+			
+    			Iterator<String> iterator = tree.getLevelOrderIterator();
+    			
+    			while(iterator.hasNext())
+    	        {
+    	            iterator.next();
+    	        }
+    			tree.CloseFile();
+    }
+  
+    private boolean AsktoWritetoFile() {
+    	boolean writetoFile;
+	
+    	keyboard = new Scanner(System.in);
+    	
+    	System.out.print("Enter Y to save to File or N otherwise: ");
+    	
+    	String write = keyboard.nextLine();
+    	
+    	if(write.equals("Y")) {
+    		writetoFile = true;
+    	}else {
+    		writetoFile = false;
+    	}  
+    	
+    	return writetoFile; 	
     }
 }
 

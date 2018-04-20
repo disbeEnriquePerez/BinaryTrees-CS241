@@ -10,4 +10,14 @@ public interface BinaryTreeInterface<T> extends TreeInterface<T>, TreeIteratorIn
      * @param leftTree The left subtree of the new tree.
      * @param rightTree The right subtree of the new tree. */
     void setTree(T rootData, BinaryTreeInterface<T> leftTree, BinaryTreeInterface<T> rightTree);
+    
+    BinaryNode<T> getCurrentNode();
+    
+    void setCurrentNode(BinaryNode<T> currentNode);
+    
+    void CreateNodes(BinaryNode<T> ParentNode);
+    
+    void CreateNode();
+    
+    public void CloseFile();
 }

@@ -28,6 +28,23 @@ package TreePackage;
 	    {
 	        currentNode.setData(newData);
 	    }
+	    
+		@Override
+		public void CreateNodes(BinaryNode<T> ParentNode) 
+		{
+			BinaryNode<T> LeftChild = new BinaryNode<T>();
+			BinaryNode<T> RightChild = new BinaryNode<T>();
+			ParentNode.setLeftChild(LeftChild);
+			ParentNode.setRightChild(RightChild);	
+		}
+
+
+		@Override
+		public void setCurrentNode(BinaryNode<T> currentNode) 
+		{
+			this.currentNode = currentNode;
+			
+		}
 
 	    @Override
 	    public void setResponses(T responseForNo, T responseForYes)
@@ -81,5 +98,7 @@ package TreePackage;
 	        super.setTree(rootData, leftTree, rightTree);
 	        currentNode = root;
 	    }
+
+
 	}
 

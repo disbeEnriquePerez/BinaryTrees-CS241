@@ -39,5 +39,9 @@ package TreePackage;
 
 	    /** Sets the current node to the root of the tree. */
 	    void resetCurrentNode();
+	    
+	    BinaryNode<T> getCurrentNode();
+	    
+	    void setCurrentNode(BinaryNode<T> currentNode);
 	}
 

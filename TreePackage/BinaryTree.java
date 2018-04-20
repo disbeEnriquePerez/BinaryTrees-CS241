@@ -1,14 +1,24 @@
 package TreePackage;
 
+import java.io.PrintWriter;
 import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.*;
+
 import StackPackage.*;
 import QueuePackage.*;
+import java.io.*;
 
 public class BinaryTree<T> implements BinaryTreeInterface<T>
 {
-    protected BinaryNode<T> root;
+	
+	PrintWriter file;
+    private final String FILE = "ANIMALS.txt"; 
+	
+	protected BinaryNode<T> root;
+	protected boolean Loading = false;
+	protected BinaryNode<T> currentNode = null;
 
     public BinaryTree()
     {
@@ -82,6 +92,42 @@ public class BinaryTree<T> implements BinaryTreeInterface<T>
     {
         setTree(rootData, null, null);
     }
+	
+    @Override
+	public BinaryNode<T> getCurrentNode() 
+	{
+		return currentNode;
+	}
+    
+	@Override
+	public void setCurrentNode(BinaryNode<T> currentNode) 
+	{
+		this.currentNode = currentNode;
+		
+	}
+
+	@Override
+	public void CreateNode() 
+	{
+		Loading = true;
+		
+	}
+	@Override
+	public void CloseFile()
+	{
+		file.close();
+	}
+
+	@Override
+	public void CreateNodes(BinaryNode<T> ParentNode) 
+	{
+		BinaryNode<T> LeftChild = new BinaryNode<T>();
+		BinaryNode<T> RightChild = new BinaryNode<T>();
+		ParentNode.setLeftChild(LeftChild);
+		ParentNode.setRightChild(RightChild);
+	}
+
+
 
     @Override
     public void setTree(T rootData, BinaryTreeInterface<T> leftTree, BinaryTreeInterface<T> rightTree)
@@ -119,59 +165,69 @@ public class BinaryTree<T> implements BinaryTreeInterface<T>
     {
         return root == null;
     }
-
-    // traversal that doesn't use an iterator (for demonstration purposes only)
-    public void iterativeInorderTraverse()
-    {
-        StackInterface<BinaryNode<T>> nodeStack = new ArrayStack<>();
-        BinaryNode<T> currentNode = root;
-
-        while (!nodeStack.isEmpty() || (currentNode != null))
-        {
-            while (currentNode != null)
-            {
-                nodeStack.push(currentNode);
-                currentNode = currentNode.getLeftChild();
-            }
-
-            if (!nodeStack.isEmpty())
-            {
-                BinaryNode<T> nextNode = nodeStack.pop();
-
-                System.out.println(nextNode.getData());
-                currentNode = nextNode.getRightChild();
-            }
-        }
-    }
+    
     private class LevelOrderIterator implements Iterator<T>
     {
     	private LinkedQueue<BinaryNode<T>> nodeStack;
-    	private BinaryNode<T> currentNode;
+    	private BinaryNode<T> currentNode; 
+    	Scanner AnimalsReader;
     	
     	public LevelOrderIterator()
     	{
+    		try 
+    		{
+    			if(!Loading) {
+    				file = new PrintWriter(FILE);
+    				file.println(root.getData()); 
+    			
+    			}
+   			}catch(Exception ex) {
+   				System.out.println("ERROR:");
+   			}
     		nodeStack = new LinkedQueue();
     		nodeStack.enqueue(root);
+    		Loading = false;
     	}
-		@Override
+		
+    	@Override
 		public boolean hasNext() {
 			return !nodeStack.isEmpty();
 		}
-
+		
+		
 		@Override
 		public T next() {
+			
 			BinaryNode<T> Node = nodeStack.dequeue();
 			
-			if(Node.hasLeftChild()) {
+		
+		if(!Loading) 
+		{
+			if(Node.hasLeftChild() && Node.getLeftChild() != null) {
 				nodeStack.enqueue(Node.getLeftChild());
+				file.println(Node.getLeftChild().getData());
+			}else{
+				file.println("null");
 			}
-			if(Node.hasRightChild()) {
+			
+			if(Node.hasRightChild() && Node.getLeftChild() != null) {
 				nodeStack.enqueue(Node.getRightChild());
+				file.println(Node.getRightChild().getData());
+			}else {
+				file.println("null");
 			}
+		}else 
+		{
+			CreateNodes(Node);
+			
+			setCurrentNode(Node);
+		}
+		
+			Loading = false;
 			
 			return Node.getData();
 		}
-    	
+		    	
     }
     private class PreOrderIterator implements Iterator<T>
     {
@@ -203,7 +259,30 @@ public class BinaryTree<T> implements BinaryTreeInterface<T>
 		}
  	
     }
-    
+    // traversal that doesn't use an iterator (for demonstration purposes only)
+    public void iterativeInorderTraverse()
+    {
+        StackInterface<BinaryNode<T>> nodeStack = new ArrayStack<>();
+        BinaryNode<T> currentNode = root;
+
+        while (!nodeStack.isEmpty() || (currentNode != null))
+        {
+            while (currentNode != null)
+            {
+                nodeStack.push(currentNode);
+                currentNode = currentNode.getLeftChild();
+            }
+
+            if (!nodeStack.isEmpty())
+            {
+                BinaryNode<T> nextNode = nodeStack.pop();
+
+                System.out.println(nextNode.getData());
+                currentNode = nextNode.getRightChild();
+            }
+        }
+        
+    }
     private class PostorderIterator implements Iterator<T>
     {	
     	private StackInterface<BinaryNode<T>> nodeStack;
